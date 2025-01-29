@@ -1,22 +1,26 @@
-Создаем базу данных:
+## Создаем базу данных:
+```
 CREATE DATABASE skillbox_db;
-
-Подключаемся к базе данных:
+```
+## Подключаемся к базе данных:
+```
 \c skillbox_db
-
-Создаём таблицы skillbox_test с полями: «Идентификатор», «Логин», «Размер заработной платы», «Контактный номер телефона»:
+```
+## Создаём таблицы skillbox_test с полями: «Идентификатор», «Логин», «Размер заработной платы», «Контактный номер телефона»:
+```
 CREATE TABLE skillbox_test (
     id SERIAL PRIMARY KEY,
     login VARCHAR(255) NOT NULL,
     salary INTEGER NOT NULL,
     phone_number VARCHAR(15) NOT NULL
 );
-
-Создаем пользователей для сотрудников отдела сбыта:
+```
+## Создаем пользователей для сотрудников отдела сбыта:
+```
 CREATE USER semionov WITH PASSWORD 'password_1';
 CREATE USER danilov WITH PASSWORD 'password_2';
 CREATE USER romanova WITH PASSWORD 'password_3';
-
+```
 Добавляем данные в тестовую таблицу:
 INSERT INTO skillbox_test (login, salary, phone_number) VALUES
 ('SEMIONOV', 50000, '791101234567'),
