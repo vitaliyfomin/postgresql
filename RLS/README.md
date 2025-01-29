@@ -21,41 +21,48 @@ CREATE USER semionov WITH PASSWORD 'password_1';
 CREATE USER danilov WITH PASSWORD 'password_2';
 CREATE USER romanova WITH PASSWORD 'password_3';
 ```
-Добавляем данные в тестовую таблицу:
+## Добавляем данные в тестовую таблицу:
+```
 INSERT INTO skillbox_test (login, salary, phone_number) VALUES
 ('SEMIONOV', 50000, '791101234567'),
 ('DANILOV', 90000, '795301234567'),
 ('ROMANOVA', 70000, '790401234567');
-
-Предоставляем права на таблицу для всех пользователей:
+```
+## Предоставляем права на таблицу для всех пользователей:
+```
 GRANT SELECT ON skillbox_test TO semionov, danilov, romanova;
-
-Включаем RLS (Row Level Security) и создаём политику:
+```
+## Включаем RLS (Row Level Security) и создаём политику:
+```
 CREATE POLICY sales_policy
  ALTER TABLE skillbox_test ENABLE ROW LEVEL SECURITY;
-
-Политика для SEMIONOV (видит только свои записи):
+```
+## Политика для SEMIONOV (видит только свои записи):
+```
 CREATE POLICY sales_policy_semionov
     ON skillbox_test
     FOR SELECT
     TO semionov
     USING (login = 'SEMIONOV');
-
-Политика для DANILOV (видит только свои записи):
+```
+## Политика для DANILOV (видит только свои записи):
+```
 CREATE POLICY sales_policy_danilov
     ON skillbox_test
     FOR SELECT
     TO danilov
     USING (login = 'DANILOV');
-
-Политика для ROMANOVA (видит все записи):
+```
+## Политика для ROMANOVA (видит все записи):
+```
 CREATE POLICY accounting_policy
     ON skillbox_test
     FOR SELECT
     TO romanova
     USING (true);
-
-Создаём представления с маскировкой данных:
+```
+## Создаём представления с маскировкой данных:
+```
 CREATE VIEW skillbox_test_masked AS
 SELECT
     id,
@@ -68,32 +75,36 @@ SELECT
             phone_number  -- Для бухгалтерии показываем настоящий номер телефона
     END AS phone_number
 FROM skillbox_test;
-
-Предоставляем права на представление:
+```
+## Предоставляем права на представление:
+```
 GRANT SELECT ON skillbox_test_masked TO semionov, danilov, romanova;
-
-Проверяем работу маскировки:
-Проверка для SEMIONOV:
+```
+## Проверяем работу маскировки:
+### Проверка для SEMIONOV:
+```
 SET ROLE semionov;
 SELECT * FROM skillbox_test_masked;
-
-Проверка для DANILOV:
+```
+### Проверка для DANILOV:
+```
 SET ROLE danilov;
 SELECT * FROM skillbox_test_masked;
-
-Проверка для ROMANOVA:
+```
+### Проверка для ROMANOVA:
+```
 SET ROLE romanova;
 SELECT * FROM skillbox_test_masked;
+```
+# ИЛИ
 
-
-ИЛИ
-
-
-Удаляем представление skillbox_test_masked:
+## Удаляем представление skillbox_test_masked:
+```
 DROP VIEW IF EXISTS skillbox_test_masked;
-
-Создаем новый запрос с учетом RLS и маскировки:
-Запрос для SEMIONOV:
+```
+## Создаем новый запрос с учетом RLS и маскировки:
+### Запрос для SEMIONOV:
+```
 SET ROLE semionov;
 SELECT
     id,
@@ -107,8 +118,9 @@ SELECT
     END AS phone_number
 FROM skillbox_test
 WHERE login = 'SEMIONOV';  -- Применяем политику RLS
-
-Запрос для DANILOV:
+```
+### Запрос для DANILOV:
+```
 SET ROLE danilov;
 SELECT
     id,
@@ -122,8 +134,9 @@ SELECT
     END AS phone_number
 FROM skillbox_test
 WHERE login = 'DANILOV';  -- Применяем политику RLS
-
-Запрос для ROMANOVA:
+```
+### Запрос для ROMANOVA:
+```
 SET ROLE romanova;
 SELECT
     id,
@@ -136,4 +149,4 @@ SELECT
             phone_number  -- Для бухгалтерии показываем настоящий номер телефона
     END AS phone_number
 FROM skillbox_test;  -- ROMANOVA видит все записи
-
+```
